@@ -1,0 +1,644 @@
+{
+	"info": {
+		"_postman_id": "d90efc7d-bdfe-4ee5-9c75-1855a7fb1620",
+		"name": "Wize_Sess_2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Assesment 2",
+			"item": [
+				{
+					"name": "Create a new task",
+					"item": [
+						{
+							"name": "Create a new tasks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.success;\r",
+											"});\r",
+											"\r",
+											"//Content test\r",
+											"pm.test(\"Body matches string\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"//JSON schema test\r",
+											"const schema = {\r",
+											"    \"id\": \"integer\",\r",
+											"    \"assigner\": \"integer\",\r",
+											"    \"project_id\": \"integer\",\r",
+											"    \"section_id\": \"integer\",\r",
+											"    \"order\": \"integer\",\r",
+											"    \"content\": \"string\",\r",
+											"    \"completed\": \"Boolean\",\r",
+											"    \"priority\": \"integer\",\r",
+											"    \"comment_count\": \"integer\",\r",
+											"    \"creator\": \"integer\",\r",
+											"\r",
+											"};\r",
+											"pm.test(\"Validate schema\", () => {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"//Get the task ID created\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"targetTaskx\", jsonData.id);\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Requested-Id",
+										"value": "uuidgen",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"project_id\": {{projectBase}},\r\n    \"content\": \"Task_test_x\", \r\n    \"due_string\": \"today at 12:00\", \r\n    \"due_lang\": \"en\", \r\n    \"priority\": 4\r\n}\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{baseURL}}",
+									"host": [
+										"{{baseURL}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a new tasks Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test expected negative response response\r",
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.be.badRequest;\r",
+											"});\r",
+											"\r",
+											"//Content task was not created and has not content\r",
+											"pm.test(\"Body matches string\", function () {\r",
+											"    pm.expect(pm.response.text()).to.not.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Requested-Id",
+										"value": "uuidgen",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "//create a task on aproject thad does not exsist\r\n{\r\n    \"project_id\": {{projectBaseNegative}},\r\n    \"content\": \"Task_test_x\", \r\n    \"due_string\": \"today at 12:00\", \r\n    \"due_lang\": \"en\", \r\n    \"priority\": 4\r\n}\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{baseURL}}",
+									"host": [
+										"{{baseURL}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Active Tasks",
+					"item": [
+						{
+							"name": "Get Active Tasks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.success;\r",
+											"});\r",
+											"\r",
+											"//Content test\r",
+											"pm.test(\"Tasks retrieved corresponds to the Expected created test tasks\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"//JSON schema test\r",
+											"const schema = {\r",
+											"    \"id\": \"integer\",\r",
+											"    \"assigner\": \"integer\",\r",
+											"    \"project_id\": \"integer\",\r",
+											"    \"section_id\": \"integer\",\r",
+											"    \"order\": \"integer\",\r",
+											"    \"content\": \"string\",\r",
+											"    \"completed\": \"Boolean\",\r",
+											"    \"priority\": \"integer\",\r",
+											"    \"comment_count\": \"integer\",\r",
+											"    \"creator\": \"integer\",\r",
+											"\r",
+											"};\r",
+											"pm.test(\"Validate the task JSON Schema\", () => {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}",
+									"host": [
+										"{{baseURL}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active Tasks Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.success;\r",
+											"});\r",
+											"\r",
+											"//Content test\r",
+											"pm.test(\"Tasks retrieved corresponds to the Expected created test tasks\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}",
+									"host": [
+										"{{baseURL}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get an active task",
+					"item": [
+						{
+							"name": "Get an active task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.success;\r",
+											"});\r",
+											"\r",
+											"//Content test\r",
+											"pm.test(\"Body matches string\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"//JSON schema test\r",
+											"const schema = {\r",
+											"    \"id\": \"integer\",\r",
+											"    \"assigner\": \"integer\",\r",
+											"    \"project_id\": \"integer\",\r",
+											"    \"section_id\": \"integer\",\r",
+											"    \"order\": \"integer\",\r",
+											"    \"content\": \"string\",\r",
+											"    \"completed\": \"Boolean\",\r",
+											"    \"priority\": \"integer\",\r",
+											"    \"comment_count\": \"integer\",\r",
+											"    \"creator\": \"integer\",\r",
+											"\r",
+											"};\r",
+											"pm.test(\"Validate schema\", () => {\r",
+											"    pm.response.to.have.jsonSchema(schema);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"//Get the task ID created\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"targetTaskx\", jsonData.id);\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskx}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskx}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get an active task Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Negative responce since task does not exist\r",
+											"pm.test(\"Status code is 404\", function () {\r",
+											"    pm.response.to.be.status(404);\r",
+											"});\r",
+											"\r",
+											"//Content task does not exists\r",
+											"pm.test(\"Body matches string\", function () {\r",
+											"    pm.expect(pm.response.text()).to.not.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskNegative}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskNegative}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Change a task status to 'complete'",
+					"item": [
+						{
+							"name": "Change a task status to 'complete'",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.status(204);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskx}}/close",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskx}}",
+										"close"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change a task status to 'complete' Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 204 not content\", function () {\r",
+											"    pm.response.to.be.status(204);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskNegative}}/close",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskNegative}}",
+										"close"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Reopen a task",
+					"item": [
+						{
+							"name": "Reopen a task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.status(204);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskx}}/reopen",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskx}}",
+										"reopen"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reopen a task Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is bad request since task does not exist\", function () {\r",
+											"    pm.response.to.be.status(400);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskNegative}}/reopen",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskNegative}}",
+										"reopen"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete a task",
+					"item": [
+						{
+							"name": "Reopen a task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.status(204);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskx}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskx}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reopen a task Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.be.status(400);\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskNegative}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskNegative}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "8eab215d54f422226110b09fdb96f30a7e6f7aff",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "idreq",
+			"value": "4674716975"
+		}
+	]
+}
