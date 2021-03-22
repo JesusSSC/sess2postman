@@ -12,7 +12,7 @@
 					"name": "Create a new task",
 					"item": [
 						{
-							"name": "Create a new tasks",
+							"name": "Create a new task",
 							"event": [
 								{
 									"listen": "test",
@@ -360,6 +360,124 @@
 									],
 									"path": [
 										"{{targetTaskNegative}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update a task",
+					"item": [
+						{
+							"name": "Update a task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test\r",
+											"pm.test(\"Status code is 2xx\", function () {\r",
+											"    pm.response.to.be.success;\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Requested-Id",
+										"value": "uuidgen",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Task_test_x2\"\r\n}"
+								},
+								"url": {
+									"raw": "{{baseURL}}/{{targetTaskx}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{targetTaskx}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update a task Negative",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Status code test expected negative response response\r",
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.be.badRequest;\r",
+											"});\r",
+											"\r",
+											"//Content task was not created and has not content\r",
+											"pm.test(\"Body matches string\", function () {\r",
+											"    pm.expect(pm.response.text()).to.not.include(\"Task_test\");\r",
+											"});\r",
+											"\r",
+											"//Response time test\r",
+											"pm.test(\"Response time is less than 500ms\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Requested-Id",
+										"value": "uuidgen",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "//create a task on aproject thad does not exsist\r\n{\r\n    \"project_id\": {{projectBaseNegative}},\r\n    \"content\": \"Task_test_x\", \r\n    \"due_string\": \"today at 12:00\", \r\n    \"due_lang\": \"en\", \r\n    \"priority\": 4\r\n}\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{baseURL}}",
+									"host": [
+										"{{baseURL}}"
 									]
 								}
 							},
